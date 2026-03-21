@@ -874,16 +874,12 @@
 </div><!-- /phone -->
 
 <script>
-  const PROFILES = {
-    'sophia.style': { name: 'Sophia Chen',   emoji: '👩',    followers: '12.4K', following: '892', posts: '247' },
-    'alex.m':       { name: 'Alex Martinez', emoji: '🧑',    followers: '3.1K',  following: '410', posts: '88'  },
-    'jess':         { name: 'Jessica Lee',   emoji: '👱‍♀️', followers: '8.7K',  following: '601', posts: '194' },
-  };
+  const API = 'https://instacrush-api-production.up.railway.app';
 
   let currentUser = null;
   let likesRemaining = 3;
-  let myLikes   = [];   // { name, handle, emoji, time }
-  let myMatches = [];   // { name, handle, emoji, time }
+  let myLikes   = [];
+  let myMatches = [];
 
   // ── Navigation ──
   function showScreen(id) {
@@ -897,82 +893,122 @@
     showScreen(id);
   }
 
-  // ── Landing → Verify ──
-  function goToVerify() {
+  // ── Landing → Verify (calls real API) ──
+  async function goToVerify() {
     const handle = document.getElementById('landing-handle').value.trim().replace('@', '');
     if (!handle) { alert('Enter your Instagram handle first!'); return; }
     currentUser = handle;
-    const code = 'IC-' + Math.floor(1000 + Math.random() * 9000);
-    document.getElementById('verify-code').textContent = code;
-    document.getElementById('verify-code').onclick = () => {
-      navigator.clipboard?.writeText(code);
-      document.getElementById('verify-code').textContent = 'Copied!';
-      setTimeout(() => document.getElementById('verify-code').textContent = code, 1200);
-    };
+
+    try {
+      const res = await fetch(`${API}/auth/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ig_handle: handle })
+      });
+      const data = await res.json();
+      const code = data.code || 'IC-0000';
+      document.getElementById('verify-code').textContent = code;
+      document.getElementById('verify-code').onclick = () => {
+        navigator.clipboard?.writeText(code);
+        document.getElementById('verify-code').textContent = 'Copied!';
+        setTimeout(() => document.getElementById('verify-code').textContent = code, 1200);
+      };
+    } catch (e) {
+      // Fallback if API unreachable
+      const code = 'IC-' + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('verify-code').textContent = code;
+    }
+
     showScreen('verify');
   }
 
-  // ── Verify → Profile ──
+  // ── Poll for verification (calls real API) ──
+  async function pollVerification() {
+    if (!currentUser) return false;
+    try {
+      const res = await fetch(`${API}/auth/poll?handle=${currentUser}`);
+      const data = await res.json();
+      if (data.verified) {
+        likesRemaining = data.likes_remaining ?? 3;
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  // ── Go to Profile ──
   function goToProfile() {
-    const key = Object.keys(PROFILES)[Math.floor(Math.random() * Object.keys(PROFILES).length)];
-    const p = PROFILES[key];
-    document.getElementById('profile-name').textContent = p.name;
-    document.getElementById('profile-handle').textContent = '@' + (currentUser || key);
-    document.getElementById('profile-followers').textContent = p.followers;
-    document.getElementById('profile-following').textContent = p.following;
-    document.getElementById('profile-posts').textContent = p.posts;
+    document.getElementById('profile-handle').textContent = '@' + (currentUser || 'you');
+    document.getElementById('profile-name').textContent = currentUser || 'You';
     document.getElementById('likes-remaining').textContent = likesRemaining;
+    updateSearchLikesPill();
     showScreen('profile');
   }
 
-  // ── Search ──
+  // ── Search (still mock — IG API comes next) ──
   function searchHandle() {
     const raw = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
     if (!raw) return;
-    const p = PROFILES[raw] || { name: raw.charAt(0).toUpperCase() + raw.slice(1), emoji: '👤', followers: '–' };
-    document.getElementById('crush-avatar').textContent = p.emoji;
-    document.getElementById('crush-name').textContent = p.name;
-    document.getElementById('crush-meta').textContent = '@' + raw + ' · ' + p.followers + ' followers';
+    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+    document.getElementById('crush-avatar').textContent = '👤';
+    document.getElementById('crush-name').textContent = name;
+    document.getElementById('crush-meta').textContent = '@' + raw;
     document.getElementById('like-card').classList.add('visible');
   }
 
-  // ── Send Like ──
-  function sendLike() {
-    if (likesRemaining <= 0) {
-      showSubModal();
-      return;
-    }
+  // ── Send Like (calls real API) ──
+  async function sendLike() {
+    if (likesRemaining <= 0) { showSubModal(); return; }
 
     const name   = document.getElementById('crush-name').textContent;
     const emoji  = document.getElementById('crush-avatar').textContent;
     const handle = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
 
-    likesRemaining--;
-    document.getElementById('likes-remaining').textContent = likesRemaining;
-    updateSearchLikesPill();
+    const btn = document.getElementById('heart-btn');
+    btn.textContent = '⏳';
+    btn.disabled = true;
 
-    // Save to my likes
-    myLikes.push({ name, handle, emoji, time: 'Just now' });
-    updateSubtitles();
+    try {
+      const res = await fetch(`${API}/likes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
+      });
+      const data = await res.json();
 
-    // 30% match chance
-    if (Math.random() < 0.3) {
-      myMatches.push({ name, handle, emoji, time: 'Just now' });
-      updateSubtitles();
-      document.getElementById('match-avatar').textContent = emoji;
-      document.getElementById('match-name').textContent = name;
-      setTimeout(() => showScreen('match-screen'), 600);
-    } else {
-      const btn = document.getElementById('heart-btn');
-      btn.textContent = '✅';
-      setTimeout(() => {
+      if (!res.ok) {
+        alert(data.error || 'Something went wrong');
         btn.textContent = '❤️';
-        document.getElementById('like-card').classList.remove('visible');
-        document.getElementById('search-input').value = '';
-        if (likesRemaining === 0) {
-          document.getElementById('no-likes-banner').style.display = 'block';
-        }
-      }, 1200);
+        btn.disabled = false;
+        return;
+      }
+
+      likesRemaining = data.likes_remaining ?? likesRemaining - 1;
+      document.getElementById('likes-remaining').textContent = likesRemaining;
+      updateSearchLikesPill();
+      myLikes.push({ name, handle, emoji, time: 'Just now' });
+      updateSubtitles();
+
+      if (data.matched) {
+        myMatches.push({ name, handle, emoji, time: 'Just now' });
+        updateSubtitles();
+        document.getElementById('match-avatar').textContent = emoji;
+        document.getElementById('match-name').textContent = name;
+        setTimeout(() => showScreen('match-screen'), 600);
+      } else {
+        btn.textContent = '✅';
+        setTimeout(() => {
+          btn.textContent = '❤️';
+          btn.disabled = false;
+          document.getElementById('like-card').classList.remove('visible');
+          document.getElementById('search-input').value = '';
+          if (likesRemaining === 0) document.getElementById('no-likes-banner').style.display = 'block';
+        }, 1200);
+      }
+    } catch (e) {
+      alert('Could not connect to server. Try again.');
+      btn.textContent = '❤️';
+      btn.disabled = false;
     }
   }
 
