@@ -909,7 +909,11 @@
       const code = data.code || 'IC-0000';
       document.getElementById('verify-code').textContent = code;
       document.getElementById('verify-code').onclick = () => {
-        navigator.clipboard?.writeText(code);
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(code).catch(() => fallbackCopy(code));
+        } else {
+          fallbackCopy(code);
+        }
         document.getElementById('verify-code').textContent = 'Copied!';
         setTimeout(() => document.getElementById('verify-code').textContent = code, 1200);
       };
