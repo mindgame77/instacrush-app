@@ -17,7 +17,6 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Phone shell */
     .phone {
       width: 390px;
       min-height: 844px;
@@ -30,12 +29,11 @@
       flex-direction: column;
     }
 
-    /* Screens */
     .screen {
       display: none;
       flex-direction: column;
       flex: 1;
-      padding: 48px 28px 36px;
+      padding: 48px 28px 0;
       animation: fadeIn 0.25s ease;
     }
     .screen.active { display: flex; }
@@ -45,14 +43,12 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Typography */
     h1 { font-size: 28px; font-weight: 800; color: #1a1a1a; line-height: 1.2; }
     h2 { font-size: 22px; font-weight: 700; color: #1a1a1a; }
     p  { font-size: 14px; color: #888; line-height: 1.6; }
 
     .coral { color: #FF6B6B; }
 
-    /* Logo */
     .logo {
       font-size: 32px;
       font-weight: 800;
@@ -62,7 +58,6 @@
     }
     .logo span { color: #1a1a1a; }
 
-    /* Input */
     input[type="text"] {
       width: 100%;
       padding: 16px 18px;
@@ -77,7 +72,6 @@
     input[type="text"]:focus { border-color: #FF6B6B; }
     input[type="text"]::placeholder { color: #bbb; }
 
-    /* Buttons */
     .btn-primary {
       width: 100%;
       padding: 16px;
@@ -109,7 +103,6 @@
     }
     .btn-ghost:hover { background: #fff5f5; }
 
-    /* Spacer */
     .spacer { flex: 1; }
     .gap-sm { height: 12px; }
     .gap-md { height: 20px; }
@@ -261,6 +254,33 @@
     .action-card .sub { font-size: 11px; color: #aaa; margin-top: 2px; }
 
     /* ── SEARCH ── */
+    .search-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .likes-pill {
+      background: #fff5f7;
+      border: 1.5px solid #ffd0da;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FF6B6B;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+    .likes-pill.empty { background: #f0f0f0; border-color: #ddd; color: #aaa; }
+
+    .empty-quote {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      font-style: italic;
+      line-height: 1.5;
+      max-width: 260px;
+    }
+
     .search-bar {
       display: flex;
       gap: 10px;
@@ -319,6 +339,126 @@
     }
     .heart-btn:active { transform: scale(0.88); }
 
+    /* ── LIST SCREENS (My Likes, Matches, Who Liked Me) ── */
+    .list-header {
+      margin-bottom: 20px;
+    }
+    .list-header h1 { font-size: 24px; }
+    .list-header p { margin-top: 4px; font-size: 13px; }
+
+    .person-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+      padding-bottom: 8px;
+    }
+
+    .person-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f9f9f9;
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+    .person-row .p-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B6B, #ff9a9a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .person-row .p-info { flex: 1; }
+    .person-row .p-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+    .person-row .p-handle { font-size: 12px; color: #aaa; margin-top: 2px; }
+    .person-row .p-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #fff0f3;
+      color: #FF6B6B;
+    }
+    .person-row .p-badge.match { background: #FF6B6B; color: #fff; }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 10px;
+      padding-bottom: 60px;
+    }
+    .empty-state .e-icon { font-size: 52px; }
+    .empty-state h2 { font-size: 18px; color: #1a1a1a; }
+    .empty-state p { font-size: 13px; max-width: 220px; }
+
+    /* ── WHO LIKED ME — blurred cards ── */
+    .blur-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f9f9f9;
+      border-radius: 18px;
+      padding: 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .blur-row .blur-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      filter: blur(6px);
+      user-select: none;
+    }
+    .blur-row .blur-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B6B, #ff9a9a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .blur-row .blur-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+    .blur-row .blur-handle { font-size: 12px; color: #aaa; margin-top: 2px; }
+    .blur-row .lock-badge {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .wlm-upsell {
+      background: linear-gradient(135deg, #FF6B6B, #ff9a9a);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .wlm-upsell h2 { color: #fff; font-size: 17px; margin-bottom: 4px; }
+    .wlm-upsell p { color: rgba(255,255,255,0.85); font-size: 13px; margin-bottom: 14px; }
+    .wlm-upsell button {
+      background: #fff;
+      color: #FF6B6B;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
     /* Modal */
     .modal-overlay {
       position: absolute;
@@ -355,8 +495,8 @@
       margin-bottom: 20px;
     }
 
-    /* ── MATCH ── */
-    #match {
+    /* ── MATCH CELEBRATION ── */
+    #match-screen {
       background: linear-gradient(160deg, #fff0f3 0%, #fff 70%);
       text-align: center;
       align-items: center;
@@ -371,8 +511,8 @@
       0%, 100% { transform: scale(1); }
       50%       { transform: scale(1.12); }
     }
-    #match h1 { font-size: 32px; margin-bottom: 8px; }
-    #match .sub { font-size: 15px; color: #aaa; margin-bottom: 32px; }
+    #match-screen h1 { font-size: 32px; margin-bottom: 8px; }
+    #match-screen .sub { font-size: 15px; color: #aaa; margin-bottom: 32px; }
     .match-avatars {
       display: flex;
       align-items: center;
@@ -393,24 +533,36 @@
     }
     .match-x { font-size: 28px; }
 
-    /* Nav bar */
+    /* ── NAV BAR ── */
     .nav {
       display: flex;
       justify-content: space-around;
-      padding: 16px 0 24px;
+      padding: 12px 0 24px;
       border-top: 1px solid #f5eaf0;
       background: #fff;
+      flex-shrink: 0;
     }
     .nav-btn {
       background: none;
       border: none;
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
       transition: background 0.15s;
     }
     .nav-btn:hover { background: #fff5f7; }
+    .nav-btn .nav-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: #ccc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .nav-btn.active .nav-label { color: #FF6B6B; }
     .nav-btn.active { position: relative; }
     .nav-btn.active::after {
       content: '';
@@ -430,14 +582,13 @@
 
   <!-- ── LANDING ── -->
   <div class="screen active" id="landing">
-    <div class="logo">insta<span>crush</span> 💗</div>
-    <p style="margin-bottom:24px;">Anonymous likes. Mutual matches only.</p>
+    <div class="logo">insta<span>crush</span></div>
 
     <div class="landing-hero">
       <span class="emoji">💌</span>
       <h1>Does someone have<br>a crush on you?</h1>
       <div class="gap-sm"></div>
-      <p>Like people you know. They only find out<br>if they like you back.</p>
+      <p>The best icebreaker you'll ever have 🔥</p>
     </div>
 
     <div class="gap-md"></div>
@@ -445,8 +596,7 @@
     <div class="landing-steps">
       <div class="step"><div class="step-num">1</div>Enter your Instagram handle</div>
       <div class="step"><div class="step-num">2</div>Verify your identity via DM</div>
-      <div class="step"><div class="step-num">3</div>Like your crushes anonymously</div>
-      <div class="step"><div class="step-num">4</div>Match = both find out 🎉</div>
+      <div class="step"><div class="step-num">3</div>Like people you vibe with</div>
     </div>
 
     <div class="gap-lg"></div>
@@ -456,17 +606,18 @@
     <button class="btn-primary" onclick="goToVerify()">Get My Code →</button>
 
     <div class="spacer"></div>
-    <p style="text-align:center;font-size:12px;">100% anonymous until it's mutual 🔒</p>
+    <p style="text-align:center;font-size:12px;padding-bottom:32px;">you are awesome</p>
   </div>
 
   <!-- ── VERIFY ── -->
   <div class="screen" id="verify">
-    <div class="logo">insta<span>crush</span> 💗</div>
-    <div class="gap-md"></div>
-    <h1>Verify your<br><span class="coral">identity</span></h1>
-    <div class="gap-sm"></div>
+    <h1 style="font-size:26px;white-space:nowrap;">Verify your <span class="coral">identity</span></h1>
+
+    <div class="gap-lg"></div>
+
     <p>DM this code to <strong style="color:#1a1a1a;">@instacrush</strong> on Instagram to confirm you own this account.</p>
-    <div class="gap-md"></div>
+
+    <div class="gap-lg"></div>
 
     <div class="code-box">
       <p>Your verification code</p>
@@ -474,23 +625,20 @@
       <p>Tap to copy</p>
     </div>
 
-    <div class="gap-md"></div>
+    <div class="gap-lg"></div>
 
-    <div class="verify-instruction">
-      1. Open Instagram<br>
-      2. Search <strong>@instacrush</strong><br>
-      3. Send a DM with the code above<br>
-      4. Come back here — we'll detect it automatically
+    <div class="landing-steps">
+      <div class="step"><div class="step-num">1</div>Open Instagram</div>
+      <div class="step"><div class="step-num">2</div>Search <strong style="color:#1a1a1a;">@instacrush</strong></div>
+      <div class="step"><div class="step-num">3</div>Send a DM with the code above</div>
+      <div class="step"><div class="step-num">4</div>Come back here — we'll detect it</div>
     </div>
 
-    <div class="gap-md"></div>
-    <p class="waiting-text" onclick="goToProfile()">⏳ Waiting for your DM… (tap to skip for now)</p>
-
     <div class="spacer"></div>
-    <button class="btn-ghost" onclick="showScreen('landing')">← Back</button>
+    <button class="btn-ghost" style="margin-bottom:32px;" onclick="showScreen('landing')">← Back</button>
   </div>
 
-  <!-- ── PROFILE ── -->
+  <!-- ── PROFILE / HOME ── -->
   <div class="screen" id="profile">
     <div class="profile-card">
       <div class="avatar">😎</div>
@@ -521,36 +669,41 @@
         <div class="title">Search</div>
         <div class="sub">Find your crush</div>
       </button>
-      <button class="action-card">
-        <div class="icon">💌</div>
-        <div class="title">Messages</div>
-        <div class="sub">0 unread</div>
+      <button class="action-card" onclick="showScreen('who-liked-me')">
+        <div class="icon">👁️</div>
+        <div class="title">Who Liked Me</div>
+        <div class="sub">See your admirers</div>
       </button>
-      <button class="action-card">
+      <button class="action-card" onclick="showScreen('my-likes')">
         <div class="icon">❤️</div>
         <div class="title">My Likes</div>
-        <div class="sub">0 sent</div>
+        <div class="sub" id="my-likes-sub">0 sent</div>
       </button>
-      <button class="action-card">
-        <div class="icon">✨</div>
-        <div class="title">Get Likes</div>
-        <div class="sub">+5 for $5</div>
+      <button class="action-card" onclick="showScreen('matches')">
+        <div class="icon">💗</div>
+        <div class="title">Matches</div>
+        <div class="sub" id="matches-sub">0 matches</div>
       </button>
     </div>
 
     <div class="spacer"></div>
     <div class="nav">
-      <button class="nav-btn active" onclick="showScreen('profile')">🏠</button>
-      <button class="nav-btn" onclick="showScreen('search')">🔍</button>
-      <button class="nav-btn">💌</button>
-      <button class="nav-btn">👤</button>
+      <button class="nav-btn active" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
+      <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
+      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
+      <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
+      <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
   </div>
 
   <!-- ── SEARCH ── -->
   <div class="screen" id="search">
-    <h1>Find your<br><span class="coral">crush</span> 💘</h1>
-    <div class="gap-md"></div>
+    <div class="search-top">
+      <h1>Find your<br><span class="coral">crush</span> 💘</h1>
+      <div class="likes-pill" id="search-likes-pill">❤️ <span id="search-likes-count">3</span> likes left</div>
+    </div>
+
+    <div class="spacer"></div>
 
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="@instagramhandle" />
@@ -563,21 +716,114 @@
       <div class="crush-avatar" id="crush-avatar">😊</div>
       <h2 id="crush-name">Name</h2>
       <div class="meta" id="crush-meta">@handle · 0 followers</div>
-      <button class="heart-btn" onclick="sendLike()">❤️</button>
+      <button class="heart-btn" id="heart-btn" onclick="sendLike()">❤️</button>
       <p style="font-size:12px;margin-top:12px;">They won't know unless it's mutual</p>
+    </div>
+
+    <div id="no-likes-banner" style="display:none;text-align:center;padding:20px 0;">
+      <p style="font-size:15px;color:#1a1a1a;font-weight:600;margin-bottom:4px;">You're out of likes 😢</p>
+      <p style="font-size:13px;margin-bottom:16px;">Get 20 likes/day with a weekly plan</p>
+      <button class="btn-primary" style="max-width:260px;margin:0 auto;" onclick="showSubModal()">💎 Get More Likes — $5/week</button>
     </div>
 
     <div class="spacer"></div>
     <div class="nav">
-      <button class="nav-btn" onclick="showScreen('profile')">🏠</button>
-      <button class="nav-btn active" onclick="showScreen('search')">🔍</button>
-      <button class="nav-btn">💌</button>
-      <button class="nav-btn">👤</button>
+      <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
+      <button class="nav-btn active" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
+      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
+      <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
+      <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
   </div>
 
-  <!-- ── MATCH ── -->
-  <div class="screen" id="match">
+  <!-- ── MY LIKES ── -->
+  <div class="screen" id="my-likes">
+    <div class="list-header">
+      <h1>My <span class="coral">Likes</span> ❤️</h1>
+      <p>People you've liked</p>
+    </div>
+
+    <div class="person-list" id="my-likes-list">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="nav">
+      <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
+      <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
+      <button class="nav-btn active" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
+      <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
+      <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
+    </div>
+  </div>
+
+  <!-- ── MATCHES ── -->
+  <div class="screen" id="matches">
+    <div class="list-header">
+      <h1>Your <span class="coral">Matches</span> 💗</h1>
+      <p>Mutual crushes — you both liked each other</p>
+    </div>
+
+    <div class="person-list" id="matches-list">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="nav">
+      <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
+      <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
+      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
+      <button class="nav-btn active" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
+      <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
+    </div>
+  </div>
+
+  <!-- ── WHO LIKED ME ── -->
+  <div class="screen" id="who-liked-me">
+    <div class="list-header">
+      <h1>Who <span class="coral">Liked</span> You 👁️</h1>
+      <p>Someone has a crush on you…</p>
+    </div>
+
+    <div class="wlm-upsell">
+      <h2>3 people like you 🔥</h2>
+      <p>Like them back to reveal who they are — or unlock all reveals for $4.99</p>
+      <button onclick="alert('Stripe: $4.99 unlock — coming soon!')">Unlock All Reveals ✨</button>
+    </div>
+
+    <div class="person-list">
+      <div class="blur-row">
+        <div class="blur-content">
+          <div class="blur-avatar">👩</div>
+          <div><div class="blur-name">Someone from NYC</div><div class="blur-handle">@sophia.xxxxx</div></div>
+        </div>
+        <div class="lock-badge">🔒</div>
+      </div>
+      <div class="blur-row">
+        <div class="blur-content">
+          <div class="blur-avatar">🧑</div>
+          <div><div class="blur-name">Someone you follow</div><div class="blur-handle">@alex.xxxxx</div></div>
+        </div>
+        <div class="lock-badge">🔒</div>
+      </div>
+      <div class="blur-row">
+        <div class="blur-content">
+          <div class="blur-avatar">👱‍♀️</div>
+          <div><div class="blur-name">Someone nearby</div><div class="blur-handle">@jess.xxxxx</div></div>
+        </div>
+        <div class="lock-badge">🔒</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
+      <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
+      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
+      <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
+      <button class="nav-btn active" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
+    </div>
+  </div>
+
+  <!-- ── MATCH CELEBRATION ── -->
+  <div class="screen" id="match-screen">
     <div class="match-hearts">💗</div>
     <h1>It's a<br><span class="coral">Match!</span></h1>
     <p class="sub">You both liked each other 🎉</p>
@@ -589,14 +835,35 @@
     <p style="font-size:14px;color:#888;margin-bottom:24px;">Send <strong id="match-name" style="color:#1a1a1a;">them</strong> a message to break the ice!</p>
     <button class="btn-primary" style="width:260px;" onclick="alert('Stripe: $2 message unlock — coming soon!')">💌 Send Message — $2</button>
     <div class="gap-sm"></div>
-    <button class="btn-ghost" style="width:260px;" onclick="showScreen('profile')">Maybe later</button>
+    <button class="btn-ghost" style="width:260px;" onclick="nav('matches')">View All Matches</button>
+  </div>
+
+  <!-- ── SUBSCRIPTION MODAL ── -->
+  <div class="modal-overlay" id="sub-modal">
+    <div class="modal">
+      <div style="font-size:36px;text-align:center;margin-bottom:12px;">💎</div>
+      <h2 style="text-align:center;">Get Unlimited Crushing</h2>
+      <p style="text-align:center;margin-bottom:16px;">Never run out of likes again</p>
+      <div style="background:#fff5f7;border-radius:16px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:13px;color:#555;display:flex;flex-direction:column;gap:10px;">
+          <div>✅ &nbsp;<strong>20 likes every day</strong></div>
+          <div>✅ &nbsp;See who liked you back</div>
+          <div>✅ &nbsp;Unlimited matches</div>
+          <div>✅ &nbsp;Cancel anytime</div>
+        </div>
+      </div>
+      <div class="price-tag" style="display:block;text-align:center;margin-bottom:20px;">$5 / week</div>
+      <button class="btn-primary" onclick="alert('Stripe subscription — coming soon!')">Start My Week — $5</button>
+      <div class="gap-sm"></div>
+      <button class="btn-ghost" onclick="document.getElementById('sub-modal').classList.remove('open')">Maybe later</button>
+    </div>
   </div>
 
   <!-- ── MESSAGE UPSELL MODAL ── -->
   <div class="modal-overlay" id="msg-modal">
     <div class="modal">
       <h2>Send an anonymous<br>message 💌</h2>
-      <p>Let your crush know you're interested. They'll only see it if you match!</p>
+      <p>Let your crush know you're interested.</p>
       <div class="price-tag">$2</div>
       <button class="btn-primary" onclick="alert('Stripe checkout — coming soon!')">Pay $2 &amp; Send Message</button>
       <div class="gap-sm"></div>
@@ -607,28 +874,36 @@
 </div><!-- /phone -->
 
 <script>
-  // ── Mock data ──
   const PROFILES = {
-    'sophia.style': { name: 'Sophia Chen', emoji: '👩', followers: '12.4K', following: '892', posts: '247' },
-    'alex.m':       { name: 'Alex Martinez', emoji: '🧑', followers: '3.1K', following: '410', posts: '88' },
-    'jess':         { name: 'Jessica Lee', emoji: '👱‍♀️', followers: '8.7K', following: '601', posts: '194' },
+    'sophia.style': { name: 'Sophia Chen',   emoji: '👩',    followers: '12.4K', following: '892', posts: '247' },
+    'alex.m':       { name: 'Alex Martinez', emoji: '🧑',    followers: '3.1K',  following: '410', posts: '88'  },
+    'jess':         { name: 'Jessica Lee',   emoji: '👱‍♀️', followers: '8.7K',  following: '601', posts: '194' },
   };
 
   let currentUser = null;
   let likesRemaining = 3;
+  let myLikes   = [];   // { name, handle, emoji, time }
+  let myMatches = [];   // { name, handle, emoji, time }
 
+  // ── Navigation ──
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
+  function nav(id) {
+    if (id === 'my-likes')   renderMyLikes();
+    if (id === 'matches')    renderMatches();
+    showScreen(id);
+  }
+
+  // ── Landing → Verify ──
   function goToVerify() {
     const handle = document.getElementById('landing-handle').value.trim().replace('@', '');
     if (!handle) { alert('Enter your Instagram handle first!'); return; }
     currentUser = handle;
     const code = 'IC-' + Math.floor(1000 + Math.random() * 9000);
     document.getElementById('verify-code').textContent = code;
-    // Copy on tap
     document.getElementById('verify-code').onclick = () => {
       navigator.clipboard?.writeText(code);
       document.getElementById('verify-code').textContent = 'Copied!';
@@ -637,8 +912,8 @@
     showScreen('verify');
   }
 
+  // ── Verify → Profile ──
   function goToProfile() {
-    // Mock: load a random profile or the entered handle
     const key = Object.keys(PROFILES)[Math.floor(Math.random() * Object.keys(PROFILES).length)];
     const p = PROFILES[key];
     document.getElementById('profile-name').textContent = p.name;
@@ -650,41 +925,112 @@
     showScreen('profile');
   }
 
+  // ── Search ──
   function searchHandle() {
     const raw = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
     if (!raw) return;
-    const p = PROFILES[raw] || { name: raw.charAt(0).toUpperCase() + raw.slice(1), emoji: '👤', followers: '–', following: '–', posts: '–' };
+    const p = PROFILES[raw] || { name: raw.charAt(0).toUpperCase() + raw.slice(1), emoji: '👤', followers: '–' };
     document.getElementById('crush-avatar').textContent = p.emoji;
     document.getElementById('crush-name').textContent = p.name;
     document.getElementById('crush-meta').textContent = '@' + raw + ' · ' + p.followers + ' followers';
-    const card = document.getElementById('like-card');
-    card.classList.add('visible');
+    document.getElementById('like-card').classList.add('visible');
   }
 
+  // ── Send Like ──
   function sendLike() {
     if (likesRemaining <= 0) {
-      document.getElementById('msg-modal').classList.add('open');
+      showSubModal();
       return;
     }
+
+    const name   = document.getElementById('crush-name').textContent;
+    const emoji  = document.getElementById('crush-avatar').textContent;
+    const handle = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
+
     likesRemaining--;
     document.getElementById('likes-remaining').textContent = likesRemaining;
+    updateSearchLikesPill();
+
+    // Save to my likes
+    myLikes.push({ name, handle, emoji, time: 'Just now' });
+    updateSubtitles();
 
     // 30% match chance
     if (Math.random() < 0.3) {
-      const name = document.getElementById('crush-name').textContent;
-      const emoji = document.getElementById('crush-avatar').textContent;
+      myMatches.push({ name, handle, emoji, time: 'Just now' });
+      updateSubtitles();
       document.getElementById('match-avatar').textContent = emoji;
       document.getElementById('match-name').textContent = name;
-      setTimeout(() => showScreen('match'), 600);
+      setTimeout(() => showScreen('match-screen'), 600);
     } else {
-      const btn = document.querySelector('.heart-btn');
+      const btn = document.getElementById('heart-btn');
       btn.textContent = '✅';
       setTimeout(() => {
         btn.textContent = '❤️';
         document.getElementById('like-card').classList.remove('visible');
         document.getElementById('search-input').value = '';
+        if (likesRemaining === 0) {
+          document.getElementById('no-likes-banner').style.display = 'block';
+        }
       }, 1200);
     }
+  }
+
+  function updateSearchLikesPill() {
+    const pill = document.getElementById('search-likes-pill');
+    const count = document.getElementById('search-likes-count');
+    count.textContent = likesRemaining;
+    if (likesRemaining === 0) {
+      pill.classList.add('empty');
+      pill.textContent = '❌ No likes left';
+    }
+  }
+
+  function showSubModal() {
+    document.getElementById('sub-modal').classList.add('open');
+  }
+
+  function updateSubtitles() {
+    document.getElementById('my-likes-sub').textContent = myLikes.length + ' sent';
+    document.getElementById('matches-sub').textContent  = myMatches.length + ' matches';
+  }
+
+  // ── Render My Likes ──
+  function renderMyLikes() {
+    const list = document.getElementById('my-likes-list');
+    if (myLikes.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="e-icon">💭</div><p class="empty-quote">"The right partner doesn't complete you. They make you impossible to stop."</p><p style="margin-top:12px;font-size:12px;">Go find your crush 💘</p></div>`;
+      return;
+    }
+    list.innerHTML = myLikes.map(p => `
+      <div class="person-row">
+        <div class="p-avatar">${p.emoji}</div>
+        <div class="p-info">
+          <div class="p-name">${p.name}</div>
+          <div class="p-handle">@${p.handle} · ${p.time}</div>
+        </div>
+        <div class="p-badge">Liked ❤️</div>
+      </div>
+    `).join('');
+  }
+
+  // ── Render Matches ──
+  function renderMatches() {
+    const list = document.getElementById('matches-list');
+    if (myMatches.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
+      return;
+    }
+    list.innerHTML = myMatches.map(p => `
+      <div class="person-row">
+        <div class="p-avatar">${p.emoji}</div>
+        <div class="p-info">
+          <div class="p-name">${p.name}</div>
+          <div class="p-handle">@${p.handle} · ${p.time}</div>
+        </div>
+        <div class="p-badge match">Match 💗</div>
+      </div>
+    `).join('');
   }
 
   function closeModal() {
