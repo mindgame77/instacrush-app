@@ -768,15 +768,17 @@
 
     <div class="gap-md"></div>
 
-    <div class="likes-counter">
+    <div class="likes-counter" id="likes-counter-card" onclick="if(likesRemaining<=0)showSubModal()" style="cursor:default;">
       <div>
         <div class="label">Likes Remaining</div>
-        <p style="font-size:12px;margin-top:2px;">+1 per day · max 7</p>
+        <p style="font-size:12px;margin-top:2px;" id="likes-sub-text">+1 per day · max 7</p>
       </div>
-      <div class="count" id="likes-remaining">7</div>
-    </div>
-    <div id="add-likes-btn-wrap" style="display:none;margin-top:12px;">
-      <button class="btn-primary" style="padding:12px 24px;font-size:14px;" onclick="showSubModal()">💎 Get more likes</button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <div class="count" id="likes-remaining">7</div>
+        <div id="add-likes-btn-wrap" style="display:none;">
+          <span style="font-size:11px;font-weight:700;color:#FF6B6B;white-space:nowrap;">💎 Get more →</span>
+        </div>
+      </div>
     </div>
 
     <div class="gap-md"></div>
@@ -1255,7 +1257,12 @@
 
   function updateAddLikesBtn() {
     const wrap = document.getElementById('add-likes-btn-wrap');
-    if (wrap) wrap.style.display = likesRemaining <= 0 ? 'block' : 'none';
+    const card = document.getElementById('likes-counter-card');
+    const sub  = document.getElementById('likes-sub-text');
+    const show = likesRemaining <= 0;
+    if (wrap) wrap.style.display = show ? 'block' : 'none';
+    if (card) card.style.cursor = show ? 'pointer' : 'default';
+    if (sub)  sub.textContent   = show ? 'Tap to get more' : '+1 per day · max 7';
   }
 
   async function updateSubtitles() {
