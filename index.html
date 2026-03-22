@@ -1383,10 +1383,15 @@
   // ── Render Matches (loads from DB) ──
   async function renderMatches() {
     const list = document.getElementById('matches-list');
+    if (!currentUser) { showScreen('landing'); return; }
     list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Loading...</div>`;
     try {
       const res = await fetch(`${API}/likes/matches?handle=${currentUser}`);
       const data = await res.json();
+      if (data.error) {
+        list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Error: ${data.error} (handle: ${currentUser})</div>`;
+        return;
+      }
       const matches = data.matches || [];
       if (matches.length === 0) {
         list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
