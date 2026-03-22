@@ -1146,40 +1146,16 @@
     const handle = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
 
     const btn = document.getElementById('heart-btn');
-    btn.textContent = '⏳';
     btn.disabled = true;
 
-    try {
-      const res = await fetch(`${API}/likes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.matched) {
-          document.getElementById('match-name').textContent = name;
-          setTimeout(() => showScreen('match-screen'), 300);
-        } else {
-          alert(data.error || 'Something went wrong');
-        }
-        btn.textContent = '❤️';
-        btn.disabled = false;
-        return;
-      }
-
+    function onLikeSuccess(data) {
       likesRemaining = data.likes_remaining ?? likesRemaining - 1;
       document.getElementById('likes-remaining').textContent = likesRemaining;
       updateSearchLikesPill();
       updateAddLikesBtn();
       myLikes.push({ name, handle, avatar: crushAvatar, time: 'Just now' });
       updateSubtitles();
-
       if (data.matched) {
-        myMatches.push({ name, handle, emoji, time: 'Just now' });
-        updateSubtitles();
-        document.getElementById('match-avatar').textContent = emoji;
         document.getElementById('match-name').textContent = name;
         setTimeout(() => showScreen('match-screen'), 600);
       } else {
@@ -1192,28 +1168,79 @@
           if (likesRemaining === 0) document.getElementById('no-likes-banner').style.display = 'block';
         }, 1200);
       }
-    } catch (e) {
-      // Retry once (Railway cold start)
-      try {
-        await new Promise(r => setTimeout(r, 2000));
-        btn.textContent = '⏳';
-        const res2 = await fetch(`${API}/likes`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
-        });
-        const data2 = await res2.json();
-        if (!res2.ok) { if (data2.matched) { document.getElementById('match-name').textContent = name; setTimeout(() => showScreen('match-screen'), 300); } else { alert(data2.error || 'Something went wrong'); } btn.textContent = '❤️'; btn.disabled = false; return; }
-        likesRemaining = data2.likes_remaining ?? likesRemaining - 1;
-        document.getElementById('likes-remaining').textContent = likesRemaining;
-        updateSearchLikesPill(); updateAddLikesBtn(); updateSubtitles();
-        if (data2.matched) { document.getElementById('match-name').textContent = name; setTimeout(() => showScreen('match-screen'), 600); }
-        else { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '❤️'; btn.disabled = false; document.getElementById('like-card').classList.remove('visible'); document.getElementById('search-input').value = ''; }, 1200); }
-      } catch (e2) {
-        alert('Could not connect to server. Try again.');
+    }
+
+    function onLikeError(data) {
+      if (data && data.matched) {
+        document.getElementById('match-name').textContent = name;
+        setTimeout(() => showScreen('match-screen'), 300);
+      } else {
+        alert((data && data.error) || 'Something went wrong');
         btn.textContent = '❤️';
         btn.disabled = false;
       }
+    }
+
+    // Attempt the like request; returns {ok, data} or throws on network error
+    async function attemptLike() {
+      const res = await fetch(`${API}/likes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
+      });
+      const data = await res.json();
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    // First attempt
+    btn.textContent = '⏳';
+    let firstFailed = false;
+    try {
+      const { ok, status, data } = await attemptLike();
+      if (ok) { onLikeSuccess(data); return; }
+      // 409 = already liked (server saved it on a previous timed-out attempt)
+      if (status === 409) { onLikeError(data); return; }
+      onLikeError(data);
+      return;
+    } catch (e) {
+      // Network timeout — Railway cold start. First request likely saved on server.
+      firstFailed = true;
+    }
+
+    // Show "Connecting..." and wait for Railway to wake up
+    btn.textContent = '🔄';
+    await new Promise(r => setTimeout(r, 12000));
+    btn.textContent = '⏳';
+
+    try {
+      const { ok, status, data } = await attemptLike();
+      if (ok) { onLikeSuccess(data); return; }
+      // 409 means first attempt actually saved — treat as success
+      if (status === 409) {
+        if (data.matched) {
+          document.getElementById('match-name').textContent = name;
+          setTimeout(() => showScreen('match-screen'), 300);
+        } else {
+          // Like saved but no match — update UI as if success with estimated likes
+          likesRemaining = Math.max(0, likesRemaining - 1);
+          document.getElementById('likes-remaining').textContent = likesRemaining;
+          updateSearchLikesPill(); updateAddLikesBtn();
+          myLikes.push({ name, handle, avatar: crushAvatar, time: 'Just now' });
+          updateSubtitles();
+          btn.textContent = '✅';
+          setTimeout(() => {
+            btn.textContent = '❤️'; btn.disabled = false;
+            document.getElementById('like-card').classList.remove('visible');
+            document.getElementById('search-input').value = '';
+          }, 1200);
+        }
+        return;
+      }
+      onLikeError(data);
+    } catch (e2) {
+      alert('Could not connect to server. Try again.');
+      btn.textContent = '❤️';
+      btn.disabled = false;
     }
   }
 
@@ -1394,7 +1421,7 @@
       }
       const matches = data.matches || [];
       if (matches.length === 0) {
-        list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p><p style="font-size:11px;color:#aaa;margin-top:8px;">logged in as: ${currentUser}</p></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
         return;
       }
       list.innerHTML = matches.map(m => `
