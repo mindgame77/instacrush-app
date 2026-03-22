@@ -903,7 +903,7 @@
       <div class="match-avatar" id="match-avatar">😊</div>
     </div>
     <p style="font-size:14px;color:#888;margin-bottom:24px;">Send <strong id="match-name" style="color:#1a1a1a;">them</strong> a message to break the ice!</p>
-    <button class="btn-primary" style="width:260px;" onclick="alert('Stripe: $2 message unlock — coming soon!')">💌 Send Message — $2</button>
+    <button class="btn-primary" style="width:260px;" onclick="startCheckout('message_unlock', currentUser, document.getElementById('match-name').textContent)">💌 Send Message — $2</button>
     <div class="gap-sm"></div>
     <button class="btn-ghost" style="width:260px;" onclick="nav('matches')">View All Matches</button>
   </div>
@@ -979,7 +979,7 @@
 <script>
   const API = 'https://instacrush-api-production.up.railway.app';
 
-  let currentUser = null;
+  let currentUser = localStorage.getItem('ic_user') || null;
   let likesRemaining = 7;
   let myLikes   = [];
   let myMatches = [];
@@ -1002,6 +1002,7 @@
     const handle = document.getElementById('landing-handle').value.trim().replace('@', '');
     if (!handle) { alert('Enter your Instagram handle first!'); return; }
     currentUser = handle;
+    localStorage.setItem('ic_user', handle);
 
     try {
       const res = await fetch(`${API}/auth/start`, {
@@ -1242,12 +1243,12 @@
   async function updateSubtitles() {
     if (!currentUser) return;
     try {
-      const [likesRes, matchesRes] = await Promise.all([
+      const [likesRes, matchesRes] = await Promise.allSettled([
         fetch(`${API}/likes/mine?handle=${currentUser}`),
         fetch(`${API}/likes/matches?handle=${currentUser}`)
-      ]);
-      const likesData   = await likesRes.json();
-      const matchesData = await matchesRes.json();
+      ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null));
+      const likesData   = likesRes  ? await likesRes.json()   : {};
+      const matchesData = matchesRes ? await matchesRes.json() : {};
       const likeCount   = likesData.likes?.length || 0;
       const matchCount  = matchesData.matches?.length || 0;
       document.getElementById('my-likes-sub').textContent = likeCount + ' sent';
@@ -1337,23 +1338,43 @@
     }
   }
 
-  // ── Render Matches ──
-  function renderMatches() {
+  // ── Render Matches (loads from DB) ──
+  async function renderMatches() {
     const list = document.getElementById('matches-list');
-    if (myMatches.length === 0) {
-      list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
-      return;
-    }
-    list.innerHTML = myMatches.map(p => `
-      <div class="person-row">
-        <div class="p-avatar">${p.emoji}</div>
-        <div class="p-info">
-          <div class="p-name">${p.name}</div>
-          <div class="p-handle">@${p.handle} · ${p.time}</div>
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Loading...</div>`;
+    try {
+      const res = await fetch(`${API}/likes/matches?handle=${currentUser}`);
+      const data = await res.json();
+      const matches = data.matches || [];
+      if (matches.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
+        return;
+      }
+      list.innerHTML = matches.map(m => `
+        <div class="person-row">
+          <div class="p-avatar" id="match-av-${m.ig_handle}">💗</div>
+          <div class="p-info">
+            <div class="p-name">@${m.ig_handle}</div>
+            <div class="p-handle">${new Date(m.matched_at).toLocaleDateString()}</div>
+          </div>
+          <button onclick="startCheckout('message_unlock', currentUser, '${m.ig_handle}')" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;">💌 Message $2</button>
         </div>
-        <div class="p-badge match">Match 💗</div>
-      </div>
-    `).join('');
+      `).join('');
+      // Load avatars
+      matches.forEach(async m => {
+        try {
+          const pr = await fetch(`${API}/search?handle=${m.ig_handle}`);
+          if (!pr.ok) return;
+          const profile = await pr.json();
+          const el = document.getElementById(`match-av-${m.ig_handle}`);
+          if (el && profile.avatar) {
+            el.innerHTML = `<img src="${profile.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='💗'">`;
+          }
+        } catch(e) {}
+      });
+    } catch(e) {
+      list.innerHTML = `<div class="empty-state"><p>Failed to load matches.</p></div>`;
+    }
   }
 
   function closeModal() {
@@ -1361,17 +1382,30 @@
   }
 
   // Check for payment success redirect
-  (function checkPaymentReturn() {
+  (async function checkPaymentReturn() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
       history.replaceState({}, '', '/');
-      // Wait for user session to restore, then show popup
-      const interval = setInterval(() => {
-        if (currentUser) {
-          clearInterval(interval);
+      if (currentUser) {
+        // Refresh likes from DB then show profile + success popup
+        const res = await fetch(`${API}/auth/poll?handle=${currentUser}`);
+        const data = await res.json();
+        if (data.verified) {
+          likesRemaining = data.likes_remaining ?? likesRemaining;
+          await goToProfile();
           document.getElementById('success-modal').classList.add('open');
         }
-      }, 300);
+      }
+    } else if (currentUser) {
+      // Returning user — auto-restore session
+      const res = await fetch(`${API}/auth/poll?handle=${currentUser}`).catch(() => null);
+      if (res?.ok) {
+        const data = await res.json();
+        if (data.verified) {
+          likesRemaining = data.likes_remaining ?? likesRemaining;
+          goToProfile();
+        }
+      }
     }
   })();
 </script>
