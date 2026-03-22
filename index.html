@@ -936,7 +936,7 @@
       <div class="paywall-plans">
         <div class="plan-option" id="plan-weekly" onclick="selectPlan('weekly')">
           <div class="plan-label">Weekly</div>
-          <div class="plan-price">$5<span>/wk</span></div>
+          <div class="plan-price">$1<span>/wk</span></div>
         </div>
         <div class="plan-option selected" id="plan-yearly" onclick="selectPlan('yearly')">
           <div class="plan-badge">BEST VALUE</div>
@@ -1180,9 +1180,27 @@
         }, 1200);
       }
     } catch (e) {
-      alert('Could not connect to server. Try again.');
-      btn.textContent = '❤️';
-      btn.disabled = false;
+      // Retry once (Railway cold start)
+      try {
+        await new Promise(r => setTimeout(r, 2000));
+        btn.textContent = '⏳';
+        const res2 = await fetch(`${API}/likes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
+        });
+        const data2 = await res2.json();
+        if (!res2.ok) { alert(data2.error || 'Something went wrong'); btn.textContent = '❤️'; btn.disabled = false; return; }
+        likesRemaining = data2.likes_remaining ?? likesRemaining - 1;
+        document.getElementById('likes-remaining').textContent = likesRemaining;
+        updateSearchLikesPill(); updateAddLikesBtn(); updateSubtitles();
+        if (data2.matched) { document.getElementById('match-name').textContent = name; setTimeout(() => showScreen('match-screen'), 600); }
+        else { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '❤️'; btn.disabled = false; document.getElementById('like-card').classList.remove('visible'); document.getElementById('search-input').value = ''; }, 1200); }
+      } catch (e2) {
+        alert('Could not connect to server. Try again.');
+        btn.textContent = '❤️';
+        btn.disabled = false;
+      }
     }
   }
 
