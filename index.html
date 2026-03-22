@@ -1015,14 +1015,6 @@
       });
       const data = await res.json();
 
-      // Already verified — skip straight to profile
-      if (data.verified) {
-        likesRemaining = data.likes_remaining ?? likesRemaining;
-        isPremium = data.is_premium || false;
-        goToProfile();
-        return;
-      }
-
       const code = data.code || 'IC-0000';
       document.getElementById('verify-code').textContent = code;
       document.getElementById('verify-code').onclick = () => {
