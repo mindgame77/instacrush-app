@@ -1394,7 +1394,7 @@
       }
       const matches = data.matches || [];
       if (matches.length === 0) {
-        list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">💗</div><h2>No matches yet</h2><p>Keep liking people — when they like you back, you'll match!</p><p style="font-size:11px;color:#aaa;margin-top:8px;">logged in as: ${currentUser}</p></div>`;
         return;
       }
       list.innerHTML = matches.map(m => `
