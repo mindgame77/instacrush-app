@@ -1390,22 +1390,24 @@
         <div class="person-row">
           <div class="p-avatar" id="match-av-${m.ig_handle}">💗</div>
           <div class="p-info">
-            <div class="p-name">@${m.ig_handle}</div>
-            <div class="p-handle">${new Date(m.matched_at).toLocaleDateString()}</div>
+            <div class="p-name" id="match-name-${m.ig_handle}">@${m.ig_handle}</div>
+            <div class="p-handle">@${m.ig_handle}</div>
           </div>
           <button onclick="startCheckout('message_unlock', currentUser, '${m.ig_handle}')" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;">💌 Message $2</button>
         </div>
       `).join('');
-      // Load avatars
+      // Load avatars and real names
       matches.forEach(async m => {
         try {
           const pr = await fetch(`${API}/search?handle=${m.ig_handle}`);
           if (!pr.ok) return;
           const profile = await pr.json();
-          const el = document.getElementById(`match-av-${m.ig_handle}`);
-          if (el && profile.avatar) {
-            el.innerHTML = `<img src="${profile.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='💗'">`;
+          const avatarEl = document.getElementById(`match-av-${m.ig_handle}`);
+          const nameEl = document.getElementById(`match-name-${m.ig_handle}`);
+          if (avatarEl && profile.avatar) {
+            avatarEl.innerHTML = `<img src="${API}${profile.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='💗'">`;
           }
+          if (nameEl && profile.name) nameEl.textContent = profile.name;
         } catch(e) {}
       });
     } catch(e) {
