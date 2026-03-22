@@ -1097,22 +1097,49 @@
   }
 
   // ── Render My Likes ──
-  function renderMyLikes() {
+  async function renderMyLikes() {
     const list = document.getElementById('my-likes-list');
-    if (myLikes.length === 0) {
-      list.innerHTML = `<div class="empty-state"><div class="e-icon">💭</div><p class="empty-quote">"The right partner doesn't complete you. They make you impossible to stop."</p><p style="margin-top:12px;font-size:12px;">Go find your crush 💘</p></div>`;
-      return;
-    }
-    list.innerHTML = myLikes.map(p => `
-      <div class="person-row">
-        <div class="p-avatar">${p.avatar ? `<img src="${p.avatar}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">` : '👤'}</div>
-        <div class="p-info">
-          <div class="p-name">${p.name}</div>
-          <div class="p-handle">@${p.handle} · ${p.time}</div>
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Loading...</div>`;
+
+    try {
+      const res = await fetch(`${API}/likes/mine?handle=${currentUser}`);
+      const data = await res.json();
+      const likes = data.likes || [];
+
+      if (likes.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">💭</div><p class="empty-quote">"The right partner doesn't complete you. They make you impossible to stop."</p><p style="margin-top:12px;font-size:12px;">Go find your crush 💘</p></div>`;
+        return;
+      }
+
+      // Render with placeholder avatars first, then load real ones
+      list.innerHTML = likes.map(p => `
+        <div class="person-row">
+          <div class="p-avatar" id="like-avatar-${p.to_ig_handle}">👤</div>
+          <div class="p-info">
+            <div class="p-name" id="like-name-${p.to_ig_handle}">@${p.to_ig_handle}</div>
+            <div class="p-handle">@${p.to_ig_handle}</div>
+          </div>
+          <div class="p-badge">Liked ❤️</div>
         </div>
-        <div class="p-badge">Liked ❤️</div>
-      </div>
-    `).join('');
+      `).join('');
+
+      // Load real profile data for each like
+      likes.forEach(async p => {
+        try {
+          const pr = await fetch(`${API}/search?handle=${p.to_ig_handle}`);
+          if (!pr.ok) return;
+          const profile = await pr.json();
+          const nameEl = document.getElementById(`like-name-${p.to_ig_handle}`);
+          const avatarEl = document.getElementById(`like-avatar-${p.to_ig_handle}`);
+          if (nameEl && profile.name) nameEl.textContent = profile.name;
+          if (avatarEl && profile.avatar) {
+            avatarEl.innerHTML = `<img src="${API}${profile.avatar}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">`;
+          }
+        } catch (e) {}
+      });
+    } catch (e) {
+      list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Could not load likes</div>`;
+    }
   }
 
   // ── Render Matches ──
