@@ -924,6 +924,21 @@
     }
 
     showScreen('verify');
+    startPolling();
+  }
+
+  // ── Auto-poll every 3s until verified ──
+  let pollInterval = null;
+  function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(async () => {
+      const verified = await pollVerification();
+      if (verified) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        goToProfile();
+      }
+    }, 3000);
   }
 
   // ── Poll for verification (calls real API) ──
