@@ -658,7 +658,7 @@
         <div class="label">Likes Remaining</div>
         <p style="font-size:12px;margin-top:2px;">Resets every 24 hours</p>
       </div>
-      <div class="count" id="likes-remaining">3</div>
+      <div class="count" id="likes-remaining">7</div>
     </div>
 
     <div class="gap-md"></div>
@@ -717,7 +717,6 @@
       <h2 id="crush-name">Name</h2>
       <div class="meta" id="crush-meta">@handle · 0 followers</div>
       <button class="heart-btn" id="heart-btn" onclick="sendLike()">❤️</button>
-      <p style="font-size:12px;margin-top:12px;">They won't know unless it's mutual</p>
     </div>
 
     <div id="no-likes-banner" style="display:none;text-align:center;padding:20px 0;">
@@ -877,7 +876,7 @@
   const API = 'https://instacrush-api-production.up.railway.app';
 
   let currentUser = null;
-  let likesRemaining = 3;
+  let likesRemaining = 7;
   let myLikes   = [];
   let myMatches = [];
 
@@ -948,7 +947,7 @@
       const res = await fetch(`${API}/auth/poll?handle=${currentUser}`);
       const data = await res.json();
       if (data.verified) {
-        likesRemaining = data.likes_remaining ?? 3;
+        likesRemaining = data.likes_remaining ?? 7;
         return true;
       }
     } catch (e) {}
@@ -1026,7 +1025,8 @@
     if (likesRemaining <= 0) { showSubModal(); return; }
 
     const name   = document.getElementById('crush-name').textContent;
-    const emoji  = document.getElementById('crush-avatar').textContent;
+    const avatarImg = document.getElementById('crush-avatar').querySelector('img');
+    const crushAvatar = avatarImg ? avatarImg.src : null;
     const handle = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
 
     const btn = document.getElementById('heart-btn');
@@ -1051,7 +1051,7 @@
       likesRemaining = data.likes_remaining ?? likesRemaining - 1;
       document.getElementById('likes-remaining').textContent = likesRemaining;
       updateSearchLikesPill();
-      myLikes.push({ name, handle, emoji, time: 'Just now' });
+      myLikes.push({ name, handle, avatar: crushAvatar, time: 'Just now' });
       updateSubtitles();
 
       if (data.matched) {
@@ -1105,7 +1105,7 @@
     }
     list.innerHTML = myLikes.map(p => `
       <div class="person-row">
-        <div class="p-avatar">${p.emoji}</div>
+        <div class="p-avatar">${p.avatar ? `<img src="${p.avatar}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">` : '👤'}</div>
         <div class="p-info">
           <div class="p-name">${p.name}</div>
           <div class="p-handle">@${p.handle} · ${p.time}</div>
