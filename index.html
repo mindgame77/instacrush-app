@@ -970,8 +970,10 @@
         const data = await res.json();
         if (data.name) document.getElementById('profile-name').textContent = data.name;
         if (data.followers !== undefined) document.getElementById('profile-followers').textContent = data.followers.toLocaleString();
+        if (data.following !== undefined) document.getElementById('profile-following').textContent = data.following.toLocaleString();
+        if (data.posts !== undefined) document.getElementById('profile-posts').textContent = data.posts.toLocaleString();
         if (data.avatar) {
-          document.getElementById('profile-avatar').innerHTML = `<img src="${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.6);" onerror="this.parentElement.textContent='😎'">`;
+          document.getElementById('profile-avatar').innerHTML = `<img src="${API}${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.6);" onerror="this.parentElement.textContent='😎'">`;
         }
       }
     } catch (e) {}
