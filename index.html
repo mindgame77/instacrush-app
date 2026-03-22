@@ -768,7 +768,7 @@
 
     <div class="gap-md"></div>
 
-    <div class="likes-counter" id="likes-counter-card" onclick="if(likesRemaining<=0&&!isPremium)showSubModal()" style="cursor:default;">
+    <div class="likes-counter" id="likes-counter-card" onclick="if(likesRemaining<=0){isPremium?alert('Your 7 likes refill tomorrow!'):showSubModal()}" style="cursor:default;">
       <div>
         <div class="label">Likes Remaining</div>
         <p style="font-size:12px;margin-top:2px;" id="likes-sub-text">+1 per day · max 7</p>
@@ -1134,7 +1134,10 @@
 
   // ── Send Like (calls real API) ──
   async function sendLike() {
-    if (likesRemaining <= 0 && !isPremium) { showSubModal(); return; }
+    if (likesRemaining <= 0) {
+      if (isPremium) { alert('You\'re out of likes — your 7 likes refill tomorrow!'); return; }
+      showSubModal(); return;
+    }
 
     const name   = document.getElementById('crush-name').textContent;
     const avatarImg = document.getElementById('crush-avatar').querySelector('img');
@@ -1261,10 +1264,16 @@
     const wrap = document.getElementById('add-likes-btn-wrap');
     const card = document.getElementById('likes-counter-card');
     const sub  = document.getElementById('likes-sub-text');
-    const show = likesRemaining <= 0 && !isPremium;
-    if (wrap) wrap.style.display = show ? 'block' : 'none';
-    if (card) card.style.cursor = show ? 'pointer' : 'default';
-    if (sub)  sub.textContent   = isPremium ? '✦ Premium · renews weekly' : (show ? 'Tap to get more' : '+1 per day · max 7');
+    const outOfLikes = likesRemaining <= 0;
+    const showPaywall = outOfLikes && !isPremium;
+    if (wrap) wrap.style.display = showPaywall ? 'block' : 'none';
+    if (card) card.style.cursor = outOfLikes ? 'pointer' : 'default';
+    if (sub) {
+      if (isPremium && outOfLikes) sub.textContent = '✦ Premium · refills tomorrow';
+      else if (isPremium)          sub.textContent = '✦ Premium · 7 likes per day';
+      else if (showPaywall)        sub.textContent = 'Tap to get more';
+      else                         sub.textContent = '+1 per day · max 7';
+    }
   }
 
   async function updateSubtitles() {
