@@ -994,6 +994,7 @@
   }
 
   function nav(id) {
+    if (!currentUser && id !== 'landing' && id !== 'verify') { showScreen('landing'); return; }
     if (id === 'search')      renderMyLikes();
     if (id === 'matches')     renderMatches();
     if (id === 'who-liked-me') renderWhoLikedMe();
@@ -1419,23 +1420,15 @@
     document.getElementById('msg-modal').classList.remove('open');
   }
 
-  // Check for payment success redirect
+  // Handle Stripe redirects
   (async function checkPaymentReturn() {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('payment') === 'success') {
+    const payment = params.get('payment');
+    if (payment === 'success' || payment === 'cancelled') {
       history.replaceState({}, '', '/');
-      if (currentUser) {
-        // Refresh likes from DB then show profile + success popup
-        const res = await fetch(`${API}/auth/poll?handle=${currentUser}`);
-        const data = await res.json();
-        if (data.verified) {
-          likesRemaining = data.likes_remaining ?? likesRemaining;
-          isPremium = data.is_premium || false;
-          await goToProfile();
-          document.getElementById('success-modal').classList.add('open');
-        }
-      }
     }
+    // Always land on login screen — session must be re-established via DM code
+    showScreen('landing');
   })();
 </script>
 </body>
