@@ -656,7 +656,7 @@
     <div class="likes-counter">
       <div>
         <div class="label">Likes Remaining</div>
-        <p style="font-size:12px;margin-top:2px;">Resets every 24 hours</p>
+        <p style="font-size:12px;margin-top:2px;">+1 per day · max 7</p>
       </div>
       <div class="count" id="likes-remaining">7</div>
     </div>
@@ -782,35 +782,13 @@
       <p>Someone has a crush on you…</p>
     </div>
 
-    <div class="wlm-upsell">
-      <h2>3 people like you 🔥</h2>
+    <div class="wlm-upsell" id="wlm-upsell" style="display:none;">
+      <h2 id="wlm-count-text">0 people like you</h2>
       <p>Like them back to reveal who they are — or unlock all reveals for $4.99</p>
       <button onclick="alert('Stripe: $4.99 unlock — coming soon!')">Unlock All Reveals ✨</button>
     </div>
 
-    <div class="person-list">
-      <div class="blur-row">
-        <div class="blur-content">
-          <div class="blur-avatar">👩</div>
-          <div><div class="blur-name">Someone from NYC</div><div class="blur-handle">@sophia.xxxxx</div></div>
-        </div>
-        <div class="lock-badge">🔒</div>
-      </div>
-      <div class="blur-row">
-        <div class="blur-content">
-          <div class="blur-avatar">🧑</div>
-          <div><div class="blur-name">Someone you follow</div><div class="blur-handle">@alex.xxxxx</div></div>
-        </div>
-        <div class="lock-badge">🔒</div>
-      </div>
-      <div class="blur-row">
-        <div class="blur-content">
-          <div class="blur-avatar">👱‍♀️</div>
-          <div><div class="blur-name">Someone nearby</div><div class="blur-handle">@jess.xxxxx</div></div>
-        </div>
-        <div class="lock-badge">🔒</div>
-      </div>
-    </div>
+    <div class="person-list" id="wlm-list"></div>
 
     <div class="nav">
       <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
@@ -887,8 +865,9 @@
   }
 
   function nav(id) {
-    if (id === 'my-likes')   renderMyLikes();
-    if (id === 'matches')    renderMatches();
+    if (id === 'my-likes')    renderMyLikes();
+    if (id === 'matches')     renderMatches();
+    if (id === 'who-liked-me') renderWhoLikedMe();
     showScreen(id);
   }
 
@@ -961,6 +940,7 @@
     document.getElementById('likes-remaining').textContent = likesRemaining;
     updateSearchLikesPill();
     showScreen('profile');
+    updateSubtitles();
 
     // Fetch real Instagram profile data
     try {
@@ -1091,9 +1071,56 @@
     document.getElementById('sub-modal').classList.add('open');
   }
 
-  function updateSubtitles() {
-    document.getElementById('my-likes-sub').textContent = myLikes.length + ' sent';
-    document.getElementById('matches-sub').textContent  = myMatches.length + ' matches';
+  async function updateSubtitles() {
+    if (!currentUser) return;
+    try {
+      const [likesRes, matchesRes] = await Promise.all([
+        fetch(`${API}/likes/mine?handle=${currentUser}`),
+        fetch(`${API}/likes/matches?handle=${currentUser}`)
+      ]);
+      const likesData   = await likesRes.json();
+      const matchesData = await matchesRes.json();
+      const likeCount   = likesData.likes?.length || 0;
+      const matchCount  = matchesData.matches?.length || 0;
+      document.getElementById('my-likes-sub').textContent = likeCount + ' sent';
+      document.getElementById('matches-sub').textContent  = matchCount + ' matches';
+    } catch (e) {}
+  }
+
+  async function renderWhoLikedMe() {
+    const list    = document.getElementById('wlm-list');
+    const upsell  = document.getElementById('wlm-upsell');
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Loading...</div>`;
+
+    try {
+      const res  = await fetch(`${API}/likes/who-liked-me?handle=${currentUser}`);
+      const data = await res.json();
+      const count = data.count || 0;
+
+      if (count === 0) {
+        upsell.style.display = 'none';
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">👁️</div><p class="empty-quote">No one has liked you yet. Keep going!</p></div>`;
+        return;
+      }
+
+      upsell.style.display = 'block';
+      document.getElementById('wlm-count-text').textContent = `${count} ${count === 1 ? 'person likes' : 'people like'} you 🔥`;
+
+      // Show up to 3 blurred rows
+      const shown = Math.min(count, 3);
+      const hints = ['Someone you might know', 'Someone nearby', 'Someone from your area', 'A secret admirer', 'Someone special'];
+      list.innerHTML = Array.from({length: shown}, (_, i) => `
+        <div class="blur-row">
+          <div class="blur-content">
+            <div class="blur-avatar">👤</div>
+            <div><div class="blur-name">${hints[i % hints.length]}</div><div class="blur-handle">@???.xxxxx</div></div>
+          </div>
+          <div class="lock-badge">🔒</div>
+        </div>
+      `).join('');
+    } catch (e) {
+      list.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">Could not load</div>`;
+    }
   }
 
   // ── Render My Likes ──
@@ -1119,10 +1146,7 @@
             <div class="p-name" id="like-name-${p.to_ig_handle}">@${p.to_ig_handle}</div>
             <div class="p-handle">@${p.to_ig_handle}</div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <div class="p-badge">Liked ❤️</div>
-            <button onclick="alert('Message coming soon!')" style="font-size:11px;padding:4px 10px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;white-space:nowrap;">💌 Message $2</button>
-          </div>
+          <button onclick="alert('Message coming soon!')" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;white-space:nowrap;">💌 Message $2</button>
         </div>
       `).join('');
 
