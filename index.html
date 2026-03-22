@@ -459,6 +459,121 @@
       cursor: pointer;
     }
 
+    /* ── Paywall Screen ── */
+    #paywall { padding: 0; background: #fff; }
+    .paywall-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      height: 100%;
+      padding: 48px 28px 0;
+    }
+    .paywall-top { text-align: center; margin-bottom: 20px; }
+    .paywall-icon { font-size: 40px; margin-bottom: 12px; }
+    .paywall-title { font-size: 32px; font-weight: 800; color: #1a1a1a; line-height: 1.15; margin-bottom: 10px; }
+    .paywall-sub { font-size: 14px; color: #888; line-height: 1.6; }
+
+    .paywall-preview {
+      width: 100%;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe8f0 100%);
+      border-radius: 24px;
+      padding: 20px 16px 12px;
+      margin-bottom: 20px;
+    }
+    .paywall-phone-mock { width: 100%; }
+    .mock-bar { width: 48px; height: 4px; background: #e0c0cc; border-radius: 2px; margin: 0 auto 14px; }
+    .mock-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .mock-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFB3C6, #FF6B6B);
+      flex-shrink: 0;
+    }
+    .mock-avatar.blur { filter: blur(6px); }
+    .mock-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .mock-line { height: 8px; background: #f0e0e8; border-radius: 4px; }
+    .mock-line.w70 { width: 70%; }
+    .mock-line.w55 { width: 55%; }
+    .mock-line.w65 { width: 65%; }
+    .mock-line.w45 { width: 45%; }
+    .mock-line.w35 { width: 35%; }
+    .mock-line.w40 { width: 40%; }
+    .mock-heart { font-size: 18px; }
+    .mock-label { text-align: center; font-size: 12px; color: #FF6B6B; font-weight: 600; margin-top: 6px; }
+
+    .paywall-features {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .paywall-feat {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+    .feat-check {
+      color: #FF6B6B;
+      font-weight: 800;
+      font-size: 16px;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    .paywall-plans {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .plan-option {
+      flex: 1;
+      border: 2px solid #f0e0e8;
+      border-radius: 20px;
+      padding: 14px 12px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .plan-option.selected {
+      border-color: #FF6B6B;
+      background: #fff5f7;
+    }
+    .plan-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FF6B6B;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+    .plan-label { font-size: 12px; color: #888; margin-bottom: 4px; font-weight: 600; }
+    .plan-price { font-size: 24px; font-weight: 800; color: #1a1a1a; }
+    .plan-price span { font-size: 13px; font-weight: 500; color: #888; }
+    .plan-note { font-size: 11px; color: #FF6B6B; font-weight: 600; margin-top: 2px; }
+
+    .paywall-cta { margin-bottom: 10px; }
+    .paywall-trust { font-size: 12px; color: #aaa; text-align: center; }
+
     /* Modal */
     .modal-overlay {
       position: absolute;
@@ -815,24 +930,48 @@
     <button class="btn-ghost" style="width:260px;" onclick="nav('matches')">View All Matches</button>
   </div>
 
-  <!-- ── SUBSCRIPTION MODAL ── -->
-  <div class="modal-overlay" id="sub-modal">
-    <div class="modal">
-      <div style="font-size:36px;text-align:center;margin-bottom:12px;">💎</div>
-      <h2 style="text-align:center;">Get Unlimited Crushing</h2>
-      <p style="text-align:center;margin-bottom:16px;">Never run out of likes again</p>
-      <div style="background:#fff5f7;border-radius:16px;padding:16px;margin-bottom:20px;">
-        <div style="font-size:13px;color:#555;display:flex;flex-direction:column;gap:10px;">
-          <div>✅ &nbsp;<strong>20 likes every day</strong></div>
-          <div>✅ &nbsp;See who liked you back</div>
-          <div>✅ &nbsp;Unlimited matches</div>
-          <div>✅ &nbsp;Cancel anytime</div>
+  <!-- ── PAYWALL SCREEN ── -->
+  <div class="screen" id="paywall">
+    <div class="paywall-inner">
+      <div class="paywall-top">
+        <div class="paywall-icon">💗</div>
+        <h1 class="paywall-title">You're out<br>of likes.</h1>
+        <p class="paywall-sub">Upgrade to keep crushing — and finally<br>see who's been liking you back.</p>
+      </div>
+
+      <div class="paywall-preview">
+        <div class="paywall-phone-mock">
+          <div class="mock-bar"></div>
+          <div class="mock-row"><div class="mock-avatar blur"></div><div class="mock-lines"><div class="mock-line w70"></div><div class="mock-line w45"></div></div><div class="mock-heart">💗</div></div>
+          <div class="mock-row"><div class="mock-avatar blur"></div><div class="mock-lines"><div class="mock-line w55"></div><div class="mock-line w35"></div></div><div class="mock-heart">💗</div></div>
+          <div class="mock-row"><div class="mock-avatar blur"></div><div class="mock-lines"><div class="mock-line w65"></div><div class="mock-line w40"></div></div><div class="mock-heart">💗</div></div>
+          <div class="mock-label">People who liked you 👆</div>
         </div>
       </div>
-      <div class="price-tag" style="display:block;text-align:center;margin-bottom:20px;">$5 / week</div>
-      <button class="btn-primary" onclick="alert('Stripe subscription — coming soon!')">Start My Week — $5</button>
-      <div class="gap-sm"></div>
-      <button class="btn-ghost" onclick="document.getElementById('sub-modal').classList.remove('open')">Maybe later</button>
+
+      <div class="paywall-features">
+        <div class="paywall-feat"><span class="feat-check">✓</span> <span><strong>7 likes every day</strong>, refreshed at midnight</span></div>
+        <div class="paywall-feat"><span class="feat-check">✓</span> <span>See <strong>who liked you</strong> — revealed</span></div>
+        <div class="paywall-feat"><span class="feat-check">✓</span> <span>Unlimited matches &amp; messages</span></div>
+        <div class="paywall-feat"><span class="feat-check">✓</span> <span>Cancel anytime</span></div>
+      </div>
+
+      <div class="paywall-plans">
+        <div class="plan-option" id="plan-monthly" onclick="selectPlan('monthly')">
+          <div class="plan-label">Monthly</div>
+          <div class="plan-price">$9.99<span>/mo</span></div>
+        </div>
+        <div class="plan-option selected" id="plan-yearly" onclick="selectPlan('yearly')">
+          <div class="plan-badge">BEST VALUE</div>
+          <div class="plan-label">Yearly</div>
+          <div class="plan-price">$99<span>/yr</span></div>
+          <div class="plan-note">just $8.25/mo</div>
+        </div>
+      </div>
+
+      <button class="btn-primary paywall-cta" id="paywall-cta-btn" onclick="startSubscription()">Continue →</button>
+      <p class="paywall-trust">No payment due now · Cancel anytime</p>
+      <button class="btn-ghost" style="margin-top:8px;margin-bottom:32px;" onclick="showScreen('profile')">Maybe later</button>
     </div>
   </div>
 
@@ -1089,8 +1228,20 @@
     }
   }
 
+  let selectedPlan = 'yearly';
+
   function showSubModal() {
-    document.getElementById('sub-modal').classList.add('open');
+    showScreen('paywall');
+  }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    document.getElementById('plan-monthly').classList.toggle('selected', plan === 'monthly');
+    document.getElementById('plan-yearly').classList.toggle('selected', plan === 'yearly');
+  }
+
+  async function startSubscription() {
+    await startCheckout(selectedPlan === 'yearly' ? 'subscription_yearly' : 'subscription_monthly', currentUser);
   }
 
   async function updateSubtitles() {
