@@ -981,7 +981,7 @@
 <script>
   const API = 'https://instacrush-api-production.up.railway.app';
 
-  let currentUser = localStorage.getItem('ic_user') || null;
+  let currentUser = null;
   let likesRemaining = 7;
   let isPremium = false;
   let myLikes   = [];
@@ -1005,7 +1005,6 @@
     const handle = document.getElementById('landing-handle').value.trim().replace('@', '');
     if (!handle) { alert('Enter your Instagram handle first!'); return; }
     currentUser = handle;
-    localStorage.setItem('ic_user', handle);
 
     try {
       const res = await fetch(`${API}/auth/start`, {
@@ -1432,17 +1431,6 @@
           isPremium = data.is_premium || false;
           await goToProfile();
           document.getElementById('success-modal').classList.add('open');
-        }
-      }
-    } else if (currentUser) {
-      // Returning user — auto-restore session
-      const res = await fetch(`${API}/auth/poll?handle=${currentUser}`).catch(() => null);
-      if (res?.ok) {
-        const data = await res.json();
-        if (data.verified) {
-          likesRemaining = data.likes_remaining ?? likesRemaining;
-          isPremium = data.is_premium || false;
-          goToProfile();
         }
       }
     }
