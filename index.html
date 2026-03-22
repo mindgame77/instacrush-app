@@ -1158,7 +1158,12 @@
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || 'Something went wrong');
+        if (data.matched) {
+          document.getElementById('match-name').textContent = name;
+          setTimeout(() => showScreen('match-screen'), 300);
+        } else {
+          alert(data.error || 'Something went wrong');
+        }
         btn.textContent = '❤️';
         btn.disabled = false;
         return;
@@ -1198,7 +1203,7 @@
           body: JSON.stringify({ from_handle: currentUser, to_handle: handle })
         });
         const data2 = await res2.json();
-        if (!res2.ok) { alert(data2.error || 'Something went wrong'); btn.textContent = '❤️'; btn.disabled = false; return; }
+        if (!res2.ok) { if (data2.matched) { document.getElementById('match-name').textContent = name; setTimeout(() => showScreen('match-screen'), 300); } else { alert(data2.error || 'Something went wrong'); } btn.textContent = '❤️'; btn.disabled = false; return; }
         likesRemaining = data2.likes_remaining ?? likesRemaining - 1;
         document.getElementById('likes-remaining').textContent = likesRemaining;
         updateSearchLikesPill(); updateAddLikesBtn(); updateSubtitles();
