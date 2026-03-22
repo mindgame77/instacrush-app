@@ -775,6 +775,9 @@
       </div>
       <div class="count" id="likes-remaining">7</div>
     </div>
+    <div id="add-likes-btn-wrap" style="display:none;margin-top:12px;">
+      <button class="btn-primary" style="padding:12px 24px;font-size:14px;" onclick="showSubModal()">💎 Get more likes</button>
+    </div>
 
     <div class="gap-md"></div>
 
@@ -932,11 +935,11 @@
 
   <!-- ── PAYWALL SCREEN ── -->
   <div class="screen" id="paywall">
+    <button onclick="showScreen('profile')" style="position:absolute;top:20px;right:24px;background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;z-index:10;">✕</button>
     <div class="paywall-inner">
       <div class="paywall-top">
         <div class="paywall-icon">💗</div>
-        <h1 class="paywall-title">You're out<br>of likes.</h1>
-        <p class="paywall-sub">Upgrade to keep crushing — and finally<br>see who's been liking you back.</p>
+        <h1 class="paywall-title">Go Premium</h1>
       </div>
 
       <div class="paywall-preview">
@@ -952,26 +955,25 @@
       <div class="paywall-features">
         <div class="paywall-feat"><span class="feat-check">✓</span> <span><strong>7 likes every day</strong>, refreshed at midnight</span></div>
         <div class="paywall-feat"><span class="feat-check">✓</span> <span>See <strong>who liked you</strong> — revealed</span></div>
-        <div class="paywall-feat"><span class="feat-check">✓</span> <span>Unlimited matches &amp; messages</span></div>
         <div class="paywall-feat"><span class="feat-check">✓</span> <span>Cancel anytime</span></div>
       </div>
 
       <div class="paywall-plans">
-        <div class="plan-option" id="plan-monthly" onclick="selectPlan('monthly')">
-          <div class="plan-label">Monthly</div>
-          <div class="plan-price">$9.99<span>/mo</span></div>
+        <div class="plan-option" id="plan-weekly" onclick="selectPlan('weekly')">
+          <div class="plan-label">Weekly</div>
+          <div class="plan-price">$5<span>/wk</span></div>
         </div>
         <div class="plan-option selected" id="plan-yearly" onclick="selectPlan('yearly')">
           <div class="plan-badge">BEST VALUE</div>
           <div class="plan-label">Yearly</div>
           <div class="plan-price">$99<span>/yr</span></div>
-          <div class="plan-note">just $8.25/mo</div>
+          <div class="plan-note">just $1.90/wk</div>
         </div>
       </div>
 
-      <button class="btn-primary paywall-cta" id="paywall-cta-btn" onclick="startSubscription()">Continue →</button>
-      <p class="paywall-trust">No payment due now · Cancel anytime</p>
-      <button class="btn-ghost" style="margin-top:8px;margin-bottom:32px;" onclick="showScreen('profile')">Maybe later</button>
+      <button class="btn-primary paywall-cta" onclick="startSubscription()">Continue →</button>
+      <p class="paywall-trust">Cancel anytime</p>
+      <div style="margin-bottom:32px;"></div>
     </div>
   </div>
 
@@ -984,6 +986,16 @@
       <button class="btn-primary" onclick="startCheckout('message_unlock', currentUser)">Pay $2 &amp; Send Message</button>
       <div class="gap-sm"></div>
       <button class="btn-ghost" onclick="closeModal()">Not now</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS POPUP ── -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal" style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+      <h2 style="margin-bottom:8px;">You're Premium!</h2>
+      <p style="margin-bottom:20px;">Your likes are refreshed and who liked you is now revealed.</p>
+      <button class="btn-primary" onclick="document.getElementById('success-modal').classList.remove('open');nav('profile');">Awesome!</button>
     </div>
   </div>
 
@@ -1078,6 +1090,7 @@
     document.getElementById('profile-name').textContent = currentUser || 'You';
     document.getElementById('likes-remaining').textContent = likesRemaining;
     updateSearchLikesPill();
+    updateAddLikesBtn();
     showScreen('profile');
     updateSubtitles();
 
@@ -1170,6 +1183,7 @@
       likesRemaining = data.likes_remaining ?? likesRemaining - 1;
       document.getElementById('likes-remaining').textContent = likesRemaining;
       updateSearchLikesPill();
+      updateAddLikesBtn();
       myLikes.push({ name, handle, avatar: crushAvatar, time: 'Just now' });
       updateSubtitles();
 
@@ -1236,12 +1250,18 @@
 
   function selectPlan(plan) {
     selectedPlan = plan;
-    document.getElementById('plan-monthly').classList.toggle('selected', plan === 'monthly');
+    document.getElementById('plan-weekly').classList.toggle('selected', plan === 'weekly');
     document.getElementById('plan-yearly').classList.toggle('selected', plan === 'yearly');
   }
 
   async function startSubscription() {
-    await startCheckout(selectedPlan === 'yearly' ? 'subscription_yearly' : 'subscription_monthly', currentUser);
+    const type = selectedPlan === 'yearly' ? 'subscription_yearly' : 'subscription_weekly';
+    await startCheckout(type, currentUser);
+  }
+
+  function updateAddLikesBtn() {
+    const wrap = document.getElementById('add-likes-btn-wrap');
+    if (wrap) wrap.style.display = likesRemaining <= 0 ? 'block' : 'none';
   }
 
   async function updateSubtitles() {
@@ -1364,6 +1384,21 @@
   function closeModal() {
     document.getElementById('msg-modal').classList.remove('open');
   }
+
+  // Check for payment success redirect
+  (function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      history.replaceState({}, '', '/');
+      // Wait for user session to restore, then show popup
+      const interval = setInterval(() => {
+        if (currentUser) {
+          clearInterval(interval);
+          document.getElementById('success-modal').classList.add('open');
+        }
+      }, 300);
+    }
+  })();
 </script>
 </body>
 </html>
