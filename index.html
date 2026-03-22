@@ -973,7 +973,7 @@
         if (data.following !== undefined) document.getElementById('profile-following').textContent = data.following.toLocaleString();
         if (data.posts !== undefined) document.getElementById('profile-posts').textContent = data.posts.toLocaleString();
         if (data.avatar) {
-          document.getElementById('profile-avatar').innerHTML = `<img src="${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.6);" onerror="this.parentElement.textContent='😎'">`;
+          document.getElementById('profile-avatar').innerHTML = `<img src="${API}${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.6);" onerror="this.parentElement.textContent='😎'">`;
         }
       }
     } catch (e) {}
@@ -1003,7 +1003,7 @@
       // Show avatar image or fallback emoji
       const avatarEl = document.getElementById('crush-avatar');
       if (data.avatar) {
-        avatarEl.innerHTML = `<img src="${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">`;
+        avatarEl.innerHTML = `<img src="${API}${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">`;
       } else {
         avatarEl.textContent = '👤';
       }
