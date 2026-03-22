@@ -641,7 +641,7 @@
   <!-- ── PROFILE / HOME ── -->
   <div class="screen" id="profile">
     <div class="profile-card">
-      <div class="avatar">😎</div>
+      <div class="avatar" id="profile-avatar">😎</div>
       <h2 id="profile-name">Your Name</h2>
       <div class="handle" id="profile-handle">@yourhandle</div>
       <div class="profile-stats">
@@ -956,12 +956,25 @@
   }
 
   // ── Go to Profile ──
-  function goToProfile() {
+  async function goToProfile() {
     document.getElementById('profile-handle').textContent = '@' + (currentUser || 'you');
     document.getElementById('profile-name').textContent = currentUser || 'You';
     document.getElementById('likes-remaining').textContent = likesRemaining;
     updateSearchLikesPill();
     showScreen('profile');
+
+    // Fetch real Instagram profile data
+    try {
+      const res = await fetch(`${API}/search?handle=${currentUser}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.name) document.getElementById('profile-name').textContent = data.name;
+        if (data.followers !== undefined) document.getElementById('profile-followers').textContent = data.followers.toLocaleString();
+        if (data.avatar) {
+          document.getElementById('profile-avatar').innerHTML = `<img src="${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.6);" onerror="this.parentElement.textContent='😎'">`;
+        }
+      }
+    } catch (e) {}
   }
 
   // ── Search ──
