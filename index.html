@@ -792,7 +792,7 @@
         <div class="title">Who Liked Me</div>
         <div class="sub">See your admirers</div>
       </button>
-      <button class="action-card" onclick="nav('my-likes')">
+      <button class="action-card" onclick="nav('search')">
         <div class="icon">❤️</div>
         <div class="title">My Likes</div>
         <div class="sub" id="my-likes-sub">0 sent</div>
@@ -808,27 +808,22 @@
     <div class="nav">
       <button class="nav-btn active" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
       <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
-      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
       <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
       <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
   </div>
 
-  <!-- ── SEARCH ── -->
+  <!-- ── SEARCH + MY LIKES (merged) ── -->
   <div class="screen" id="search">
     <div class="search-top">
       <h1>Find your<br><span class="coral">crush</span> 💘</h1>
       <div class="likes-pill" id="search-likes-pill">❤️ <span id="search-likes-count">3</span> likes left</div>
     </div>
 
-    <div class="spacer"></div>
-
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="@instagramhandle" onkeydown="if(event.key==='Enter')searchHandle()" />
       <button class="search-btn" onclick="searchHandle()">🔍</button>
     </div>
-
-    <div class="gap-md"></div>
 
     <div class="like-card" id="like-card">
       <div class="crush-avatar" id="crush-avatar">😊</div>
@@ -839,35 +834,17 @@
 
     <div id="no-likes-banner" style="display:none;text-align:center;padding:20px 0;">
       <p style="font-size:15px;color:#1a1a1a;font-weight:600;margin-bottom:4px;">You're out of likes 😢</p>
-      <p style="font-size:13px;margin-bottom:16px;">Get 20 likes/day with a weekly plan</p>
-      <button class="btn-primary" style="max-width:260px;margin:0 auto;" onclick="showSubModal()">💎 Get More Likes — $5/week</button>
+      <button class="btn-primary" style="max-width:260px;margin:0 auto;" onclick="showSubModal()">💎 Get More Likes</button>
     </div>
 
-    <div class="spacer"></div>
+    <div class="list-header" style="margin-top:24px;">
+      <h2>My <span class="coral">Likes</span> ❤️</h2>
+    </div>
+    <div class="person-list" id="my-likes-list"><!-- filled by JS --></div>
+
     <div class="nav">
       <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
       <button class="nav-btn active" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
-      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
-      <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
-      <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
-    </div>
-  </div>
-
-  <!-- ── MY LIKES ── -->
-  <div class="screen" id="my-likes">
-    <div class="list-header">
-      <h1>My <span class="coral">Likes</span> ❤️</h1>
-      <p>People you've liked</p>
-    </div>
-
-    <div class="person-list" id="my-likes-list">
-      <!-- filled by JS -->
-    </div>
-
-    <div class="nav">
-      <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
-      <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
-      <button class="nav-btn active" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
       <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
       <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
@@ -887,7 +864,6 @@
     <div class="nav">
       <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
       <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
-      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
       <button class="nav-btn active" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
       <button class="nav-btn" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
@@ -911,7 +887,6 @@
     <div class="nav">
       <button class="nav-btn" onclick="nav('profile')">🏠<span class="nav-label">Home</span></button>
       <button class="nav-btn" onclick="nav('search')">🔍<span class="nav-label">Search</span></button>
-      <button class="nav-btn" onclick="nav('my-likes')">❤️<span class="nav-label">Likes</span></button>
       <button class="nav-btn" onclick="nav('matches')">💗<span class="nav-label">Matches</span></button>
       <button class="nav-btn active" onclick="nav('who-liked-me')">👁️<span class="nav-label">Admirers</span></button>
     </div>
@@ -1016,7 +991,7 @@
   }
 
   function nav(id) {
-    if (id === 'my-likes')    renderMyLikes();
+    if (id === 'search')      renderMyLikes();
     if (id === 'matches')     renderMatches();
     if (id === 'who-liked-me') renderWhoLikedMe();
     showScreen(id);
