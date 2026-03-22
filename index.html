@@ -1067,14 +1067,16 @@
     }
   }
 
-  async function startCheckout(type, handle) {
+  async function startCheckout(type, handle, targetHandle) {
     const h = (handle || currentUser || '').replace('@', '').trim();
     if (!h) return alert('Please log in first.');
     try {
+      const body = { handle: h, type };
+      if (targetHandle) body.target_handle = targetHandle.replace('@', '').trim();
       const res = await fetch(`${API}/payments/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handle: h, type }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (data.url) {
@@ -1166,7 +1168,7 @@
             <div class="p-name" id="like-name-${p.to_ig_handle}">@${p.to_ig_handle}</div>
             <div class="p-handle">@${p.to_ig_handle}</div>
           </div>
-          <button onclick="startCheckout('message_unlock', this.closest('.person-row').querySelector('.p-handle')?.textContent?.replace('@','').split(' ')[0])" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;white-space:nowrap;">💌 Message $2</button>
+          <button onclick="startCheckout('message_unlock', currentUser, '${p.to_ig_handle}')" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;white-space:nowrap;">💌 Message $2</button>
         </div>
       `).join('');
 
