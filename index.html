@@ -706,7 +706,7 @@
     <div class="spacer"></div>
 
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="@instagramhandle" />
+      <input type="text" id="search-input" placeholder="@instagramhandle" onkeydown="if(event.key==='Enter')searchHandle()" />
       <button class="search-btn" onclick="searchHandle()">🔍</button>
     </div>
 
@@ -949,15 +949,46 @@
     showScreen('profile');
   }
 
-  // ── Search (still mock — IG API comes next) ──
-  function searchHandle() {
+  // ── Search ──
+  async function searchHandle() {
     const raw = document.getElementById('search-input').value.trim().replace('@', '').toLowerCase();
     if (!raw) return;
-    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
-    document.getElementById('crush-avatar').textContent = '👤';
-    document.getElementById('crush-name').textContent = name;
-    document.getElementById('crush-meta').textContent = '@' + raw;
-    document.getElementById('like-card').classList.add('visible');
+
+    const btn = document.querySelector('.search-btn');
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    document.getElementById('like-card').classList.remove('visible');
+
+    try {
+      const res = await fetch(`${API}/search?handle=${encodeURIComponent(raw)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Profile not found');
+        btn.textContent = '🔍';
+        btn.disabled = false;
+        return;
+      }
+
+      // Show avatar image or fallback emoji
+      const avatarEl = document.getElementById('crush-avatar');
+      if (data.avatar) {
+        avatarEl.innerHTML = `<img src="${data.avatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='👤'">`;
+      } else {
+        avatarEl.textContent = '👤';
+      }
+
+      document.getElementById('crush-name').textContent = data.name || raw;
+      const followers = data.followers ? `· ${data.followers.toLocaleString()} followers` : '';
+      const priv = data.is_private ? ' · 🔒 Private' : '';
+      document.getElementById('crush-meta').textContent = `@${data.handle}${followers}${priv}`;
+      document.getElementById('like-card').classList.add('visible');
+    } catch (e) {
+      alert('Search failed. Try again.');
+    }
+
+    btn.textContent = '🔍';
+    btn.disabled = false;
   }
 
   // ── Send Like (calls real API) ──
