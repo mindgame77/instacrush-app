@@ -776,7 +776,7 @@
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
         <div class="count" id="likes-remaining">7</div>
         <div id="add-likes-btn-wrap" style="display:none;">
-          <span style="font-size:11px;font-weight:700;color:#FF6B6B;white-space:nowrap;">💎 Get more →</span>
+          <button onclick="showSubModal()" style="font-size:12px;font-weight:700;color:white;background:#FF6B6B;border:none;border-radius:20px;padding:7px 14px;cursor:pointer;white-space:nowrap;">💎 Get more</button>
         </div>
       </div>
     </div>
@@ -804,6 +804,12 @@
         <div class="title">Matches</div>
         <div class="sub" id="matches-sub">0 matches</div>
       </button>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:16px;padding:16px 0 8px;flex-wrap:wrap;">
+      <button onclick="nav('terms')" style="background:none;border:none;font-size:11px;color:#aaa;cursor:pointer;text-decoration:underline;">Terms & Conditions</button>
+      <button onclick="nav('privacy')" style="background:none;border:none;font-size:11px;color:#aaa;cursor:pointer;text-decoration:underline;">Privacy Policy</button>
+      <button onclick="showSubModal()" style="background:none;border:none;font-size:11px;color:#aaa;cursor:pointer;text-decoration:underline;">Subscription</button>
     </div>
 
     <div class="spacer"></div>
@@ -954,6 +960,38 @@
     </div>
   </div>
 
+  <!-- ── TERMS & CONDITIONS ── -->
+  <div class="screen" id="terms">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <button onclick="nav('profile')" style="background:none;border:none;font-size:22px;cursor:pointer;">←</button>
+      <h2>Terms & Conditions</h2>
+    </div>
+    <div style="font-size:13px;color:#555;line-height:1.8;overflow-y:auto;padding-bottom:40px;">
+      <p><strong>Last updated: March 2026</strong></p><br>
+      <p>By using Instacrush, you agree to these terms. Instacrush is an anonymous crush-matching platform. You must be 18 or older to use this service.</p><br>
+      <p><strong>Usage Rules</strong><br>You may not impersonate others, use fake Instagram handles, or abuse the like system. We reserve the right to suspend accounts that violate these rules.</p><br>
+      <p><strong>Payments</strong><br>All purchases (likes, subscriptions) are processed securely via Stripe. Subscriptions renew automatically and can be cancelled at any time.</p><br>
+      <p><strong>Limitation of Liability</strong><br>Instacrush is provided as-is. We are not responsible for matches, messages, or outcomes resulting from use of the platform.</p><br>
+      <p><strong>Contact</strong><br>For questions, contact us via Instagram @instacrushai.</p>
+    </div>
+  </div>
+
+  <!-- ── PRIVACY POLICY ── -->
+  <div class="screen" id="privacy">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <button onclick="nav('profile')" style="background:none;border:none;font-size:22px;cursor:pointer;">←</button>
+      <h2>Privacy Policy</h2>
+    </div>
+    <div style="font-size:13px;color:#555;line-height:1.8;overflow-y:auto;padding-bottom:40px;">
+      <p><strong>Last updated: March 2026</strong></p><br>
+      <p>Instacrush collects only the Instagram handle you provide. We do not collect passwords, emails, or personal data beyond what is necessary to run the service.</p><br>
+      <p><strong>Data We Store</strong><br>Your Instagram handle, verification status, likes sent, and matches. We do not sell this data to third parties.</p><br>
+      <p><strong>Instagram</strong><br>We use Instagram's public API to display profile information. We do not store your Instagram password or access your private messages beyond the verification DM.</p><br>
+      <p><strong>Payments</strong><br>Payment information is handled entirely by Stripe and never stored on our servers.</p><br>
+      <p><strong>Deletion</strong><br>To delete your account and data, contact us via Instagram @instacrushai.</p>
+    </div>
+  </div>
+
   <!-- ── MESSAGE UPSELL MODAL ── -->
   <div class="modal-overlay" id="msg-modal">
     <div class="modal">
@@ -994,7 +1032,7 @@
   }
 
   function nav(id) {
-    if (!currentUser && id !== 'landing' && id !== 'verify') { showScreen('landing'); return; }
+    if (!currentUser && id !== 'landing' && id !== 'verify' && id !== 'terms' && id !== 'privacy') { showScreen('landing'); return; }
     if (id === 'search')      renderMyLikes();
     if (id === 'matches')     renderMatches();
     if (id === 'who-liked-me') renderWhoLikedMe();
@@ -1337,7 +1375,7 @@
 
       if (count === 0) {
         upsell.style.display = 'none';
-        list.innerHTML = `<div class="empty-state"><div class="e-icon">👁️</div><p class="empty-quote">No one has liked you yet. Keep going!</p></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="e-icon">👁️</div><p class="empty-quote">Your person is out there. They just haven't found you yet.</p></div>`;
         return;
       }
 
@@ -1431,7 +1469,7 @@
             <div class="p-name" id="match-name-${m.ig_handle}">@${m.ig_handle}</div>
             <div class="p-handle">@${m.ig_handle}</div>
           </div>
-          <button onclick="startCheckout('message_unlock', currentUser, '${m.ig_handle}')" style="font-size:11px;padding:6px 12px;border-radius:20px;border:none;background:#FF6B6B;color:white;cursor:pointer;">💌 Message $2</button>
+          <span style="font-size:11px;font-weight:700;color:#FF6B6B;">💌 Make a Move</span>
         </div>
       `).join('');
       // Load avatars and real names
