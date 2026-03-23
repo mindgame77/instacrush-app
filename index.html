@@ -1153,8 +1153,8 @@
       document.getElementById('likes-remaining').textContent = likesRemaining;
       updateSearchLikesPill();
       updateAddLikesBtn();
-      myLikes.push({ name, handle, avatar: crushAvatar, time: 'Just now' });
       updateSubtitles();
+      renderMyLikes();
       if (data.matched) {
         document.getElementById('match-name').textContent = name;
         setTimeout(() => showScreen('match-screen'), 600);
